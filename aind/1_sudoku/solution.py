@@ -7,8 +7,11 @@ column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
 unitlist = row_units + column_units + square_units
 
-# TODO: Update the unit list to add the new diagonal units
-unitlist = unitlist
+diagonal1 = [rows[i]+cols[i] for i in range(len(rows))]
+diagonal2 = [rows[i]+cols[::-1][i] for i in range(len(rows))]
+# unitlist is a list of lists
+diagonal_units = [diagonal1, diagonal2]
+unitlist = unitlist + diagonal_units
 
 
 # Must be called after all units (including diagonals) are added to the unitlist
@@ -43,8 +46,26 @@ def naked_twins(values):
     and because it is simpler (since the reduce_puzzle function already calls this
     strategy repeatedly).
     """
-    # TODO: Implement this function!
-    raise NotImplementedError
+    for unit in unitlist:
+        # find boxes with two digits in unit
+        two_values_box = [box for box in unit if len(values[box]) == 2]
+        twins = []
+        # look for twins in the two_values_box list
+        for i in range(len(two_values_box)-1):
+            box1 = two_values_box[i]
+            for j in range(i+1, len(two_values_box)):
+                box2 = two_values_box[j]
+                if values[box1] == values[box2]: #twins found! saves one of them
+                    twins.append(box1)
+        # find the twins' digits in the unit's boxes and remove them (one or both)
+        for t in twins:
+            digits = values[t]
+            for box in unit:
+                # remove one or two digits at once
+                if len(values[box]) > 1 and values[box] != digits:
+                    values[box] = values[box].replace(digits[0], '').replace(digits[1], '')
+    return values
+            
 
 
 def eliminate(values):
@@ -165,7 +186,6 @@ def search(values):
         attemp = search(new_sudoku)
         if attemp:
             return attemp
-    # If you're stuck, see sthe solution.py tab!
 
 
 def solve(grid):
