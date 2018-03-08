@@ -7,8 +7,8 @@ column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
 unitlist = row_units + column_units + square_units
 
-diagonal1 = [rows[i]+cols[i] for i in range(len(rows))]
-diagonal2 = [rows[i]+cols[::-1][i] for i in range(len(rows))]
+diagonal1 = [r+c for r, c in zip(rows, cols)]
+diagonal2 = [r+c for r, c in zip(rows, cols[::-1])]
 # unitlist is a list of lists
 diagonal_units = [diagonal1, diagonal2]
 unitlist = unitlist + diagonal_units
