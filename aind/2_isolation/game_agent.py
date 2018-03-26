@@ -170,6 +170,55 @@ class MinimaxPlayer(IsolationPlayer):
         # Return the best move from the last completed search iteration
         return best_move
 
+    call_counter = 0
+    def terminal_test(self, game):
+        """ Return True if the game is over for the active player
+        and False otherwise.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        self.call_counter += 1
+        moves_available = bool(game.get_legal_moves())  # by Assumption 1
+        return not moves_available
+    
+    
+    def min_value(self, game, depth):
+        """ Return the value for a win (+1) if the game is over,
+        otherwise return the minimum value over all legal child
+        nodes.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        if self.terminal_test(game):
+            #return 1  # by Assumption 2
+            return self.score(game, game._active_player)
+        if depth == 0:
+#            return 0
+            return self.score(game, game._active_player)
+        v = float("inf")
+        for m in game.get_legal_moves():
+            v = min(v, self.max_value(game.forecast_move(m), depth-1))
+        return v
+    
+    
+    def max_value(self, game, depth):
+        """ Return the value for a loss (-1) if the game is over,
+        otherwise return the maximum value over all legal child
+        nodes.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        if self.terminal_test(game):
+            #return -1  # by assumption 2
+            return self.score(game, game._active_player)
+        if depth == 0:
+            #return 0
+            return self.score(game, game._active_player)
+        v = float("-inf")
+        for m in game.get_legal_moves():
+            v = max(v, self.min_value(game.forecast_move(m), depth-1))
+        return v
+
     def minimax(self, game, depth):
         """Implement depth-limited minimax search algorithm as described in
         the lectures.
@@ -213,7 +262,9 @@ class MinimaxPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         # TODO: finish this function!
-        raise NotImplementedError
+        return max(game.get_legal_moves(),
+                    key=lambda m: self.min_value(game.forecast_move(m), depth-1))
+
 
 
 class AlphaBetaPlayer(IsolationPlayer):
