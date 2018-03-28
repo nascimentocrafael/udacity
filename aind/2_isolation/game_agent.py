@@ -186,7 +186,9 @@ class MinimaxPlayer(IsolationPlayer):
         otherwise return the minimum value over all legal child
         nodes.
         """
-        if self.terminal_test(game) or depth == 0:
+        if self.terminal_test(game):
+            return float("inf")
+        if depth == 0:
             return self.score(game, self)
         v = float("inf")
         for m in game.get_legal_moves():
@@ -199,7 +201,9 @@ class MinimaxPlayer(IsolationPlayer):
         otherwise return the maximum value over all legal child
         nodes.
         """
-        if self.terminal_test(game) or depth == 0:
+        if self.terminal_test(game):
+            return float("-inf")
+        if depth == 0:
             return self.score(game, self)
         v = float("-inf")
         for m in game.get_legal_moves():
@@ -299,7 +303,10 @@ class AlphaBetaPlayer(IsolationPlayer):
         try:
             # The try/except block will automatically catch the exception
             # raised when the timer is about to expire.
-            return self.alphabeta(game, self.search_depth)
+            depth = 1
+            while True:
+                best_move = self.alphabeta(game, depth)
+                depth += 1
 
         except SearchTimeout:
             pass  # Handle any actions required after timeout as needed
@@ -322,7 +329,9 @@ class AlphaBetaPlayer(IsolationPlayer):
         otherwise return the minimum value over all legal child
         nodes.
         """
-        if self.terminal_test(game) or depth == 0:
+        if self.terminal_test(game):
+            return float("inf")
+        if depth == 0:
             return self.score(game, self)
         v = float("inf")
         for m in game.get_legal_moves():
@@ -339,7 +348,9 @@ class AlphaBetaPlayer(IsolationPlayer):
         otherwise return the maximum value over all legal child
         nodes.
         """
-        if self.terminal_test(game) or depth == 0:
+        if self.terminal_test(game):
+            return float("-inf")
+        if depth == 0:
             return self.score(game, self)
         v = float("-inf")
         for m in game.get_legal_moves():
@@ -399,6 +410,13 @@ class AlphaBetaPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         # TODO: finish this function!
-        return max(game.get_legal_moves(),
-                    key=lambda m: self.max_value(game.forecast_move(m), depth-1, alpha, beta))
+        best_value = float("-inf")
+        best_move = (-1, -1)
+        for m in game.get_legal_moves():
+            v = self.max_value(game.forecast_move(m), depth-1, alpha, beta)
+            if v > best_value:
+                best_value = v
+                best_move = m
+        return best_move
+
 
