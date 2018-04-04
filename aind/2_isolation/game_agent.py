@@ -10,6 +10,19 @@ class SearchTimeout(Exception):
     pass
 
 
+def diff_moves(game, player, a, b):
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(a * own_moves - b * opp_moves)
+
+def diff_moves2(game, player):
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    mvc = game.move_count
+    w, h = game.width, game.height
+    area = w * h
+    return float(own_moves - opp_moves - area - mvc)    
+
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -35,7 +48,14 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    return diff_moves(game, player, 1, 2)
+
 
 
 def custom_score_2(game, player):
@@ -61,7 +81,20 @@ def custom_score_2(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = game.get_legal_moves(player)
+    opp_moves = game.get_legal_moves(game.get_opponent(player))
+
+    intersect = set(own_moves) & set(opp_moves)
+    union = set(own_moves) | set(opp_moves)
+    iou = float(1 - len(intersect) / len(union)) if len(union) > 0 else float("inf")
+
+    return iou
 
 
 def custom_score_3(game, player):
@@ -87,7 +120,17 @@ def custom_score_3(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = game.get_legal_moves(player)
+    opp_moves = game.get_legal_moves(game.get_opponent(player))
+
+    intersect = set(own_moves) & set(opp_moves)
+    return float(1.0/len(intersect)) if len(intersect) > 0 else float(2 * (len(own_moves) - len(opp_moves)))
 
 
 class IsolationPlayer:
@@ -252,8 +295,14 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        return max(game.get_legal_moves(),
-                    key=lambda m: self.min_value(game.forecast_move(m), depth-1))
+        best_value = float("-inf")
+        best_move = (-1, -1)
+        for m in game.get_legal_moves():
+            v = self.min_value(game.forecast_move(m), depth-1)
+            if v > best_value:
+                best_value = v
+                best_move = m
+        return best_move
 
 
 
@@ -335,8 +384,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             return self.score(game, self)
         v = float("inf")
         for m in game.get_legal_moves():
-            result = self.max_value(game.forecast_move(m), depth-1, alpha, beta)
-            v = min(v, result)
+            v = min(v, self.max_value(game.forecast_move(m), depth-1, alpha, beta))
             if v <= alpha:
                 return v
             beta = min(beta, v)
@@ -354,8 +402,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             return self.score(game, self)
         v = float("-inf")
         for m in game.get_legal_moves():
-            result = self.min_value(game.forecast_move(m), depth-1, alpha, beta)
-            v = max(v, result)
+            v = max(v, self.min_value(game.forecast_move(m), depth-1, alpha, beta))
             if v >= beta:
                 return v
             alpha = max(alpha, v)
