@@ -15,13 +15,6 @@ def diff_moves(game, player, a, b):
     opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
     return float(a * own_moves - b * opp_moves)
 
-def diff_moves2(game, player):
-    own_moves = len(game.get_legal_moves(player))
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-    mvc = game.move_count
-    w, h = game.width, game.height
-    area = w * h
-    return float(own_moves - opp_moves - area - mvc)    
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -47,7 +40,6 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
     if game.is_loser(player):
         return float("-inf")
 
@@ -80,7 +72,6 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
     if game.is_loser(player):
         return float("-inf")
 
@@ -119,7 +110,6 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
     if game.is_loser(player):
         return float("-inf")
 
@@ -344,7 +334,6 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: finish this function!
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
         best_move = (-1, -1)
@@ -456,7 +445,6 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
         best_value = float("-inf")
         best_move = (-1, -1)
         for m in game.get_legal_moves():
