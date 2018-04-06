@@ -7,8 +7,17 @@ All projects are developed on Ubuntu 16.04.1 4.13.0-32-generic with
  For more details on installing Anaconda please refer to 
  [installation guide](https://docs.anaconda.com/anaconda/install/linux).
 
-## Creating AIND enviroment
+## Creating AIND environment
 ```
 conda env create -f aind-universal.yml
 ```
 
+## Activating AIND environment
+```
+source activate aind
+```
+
+## Deactivating AIND environment
+```
+source deactivate aind
+```
