@@ -78,10 +78,10 @@ class SelectorBIC(ModelSelector):
 
         # TODO implement model selection based on BIC scores
 
-        best_BIC = float("-inf")
+        best_BIC = float("inf")
         best_model = None
         for n_states in range(self.min_n_components, self.max_n_components):
-            BIC = float("-inf")
+            BIC = float("inf")
             try:
                 model = self.base_model(n_states)
                 logL = model.score(self.X, self.lengths)
@@ -90,7 +90,7 @@ class SelectorBIC(ModelSelector):
                 BIC = -2 * logL + p * np.log(n)
             except:
                 break
-            if BIC > best_BIC:
+            if BIC < best_BIC:
                 best_BIC = BIC
                 best_model = model
         return best_model
