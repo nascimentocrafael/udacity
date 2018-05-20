@@ -77,8 +77,21 @@ class SelectorBIC(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection based on BIC scores
-        raise NotImplementedError
 
+        best_BIC = float("-inf")
+        best_model = None
+        for n_states in range(self.min_n_components, self.max_n_components):
+            BIC = float("-inf")
+            try:
+                model = self.base_model(n_states)
+                logL = model.score(self.X, self.lengths)
+                BIC = -2 * logL + n_states * np.log(len(self.lengths))
+            except:
+                break
+            if BIC > best_BIC:
+                best_BIC = BIC
+                best_model = model
+        return best_model
 
 class SelectorDIC(ModelSelector):
     ''' select best model based on Discriminative Information Criterion
@@ -132,11 +145,9 @@ class SelectorCV(ModelSelector):
                     avg_logL += logL
             except:
                 break
-                #avg_logL = float("-inf")                
             avg_logL /= 2.0
 
             if avg_logL > best_logL:
                 best_logL = avg_logL
                 best_n = n_states
-        print(best_n)
         return self.base_model(best_n)
