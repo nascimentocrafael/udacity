@@ -80,7 +80,7 @@ class SelectorBIC(ModelSelector):
 
         best_BIC = float("inf")
         best_model = None
-        for n_states in range(self.min_n_components, self.max_n_components):
+        for n_states in range(self.min_n_components, self.max_n_components+1):
             BIC = float("inf")
             try:
                 model = self.base_model(n_states)
@@ -88,11 +88,11 @@ class SelectorBIC(ModelSelector):
                 n = sum(self.lengths)
                 p = (n_states ** 2) + 2 * n_states * n + 1
                 BIC = -2 * logL + p * np.log(n)
+                if BIC < best_BIC:
+                    best_BIC = BIC
+                    best_model = model
             except:
                 break
-            if BIC < best_BIC:
-                best_BIC = BIC
-                best_model = model
         return best_model
 
 class SelectorDIC(ModelSelector):
@@ -109,8 +109,32 @@ class SelectorDIC(ModelSelector):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection based on DIC scores
-        raise NotImplementedError
 
+        best_DIC = float("-inf")
+        best_model = None
+
+        other_words = [w for w in self.words if w != self.this_word]
+        m = len(self.words)
+        #print(other_words)
+        for n_states in range(self.min_n_components, self.max_n_components+1):
+            DIC = float("-inf")
+            try:
+                model = self.base_model(n_states)
+                logL = model.score(self.X, self.lengths)
+
+                #other_logL = [model.score(self.hwords[w]) for w in other_words]
+                other_logL = []
+                for w in other_words:
+                    x, l = self.hwords[w]
+                    other_logL.append(model.score(x, l))
+
+                DIC = logL - (sum(other_logL) - logL) / (m - 1)
+                if DIC > best_DIC:
+                    best_DIC = DIC
+                    best_model = model
+            except:
+                break
+        return best_model
 
 class SelectorCV(ModelSelector):
     ''' select best model based on average log Likelihood of cross-validation folds
@@ -136,7 +160,7 @@ class SelectorCV(ModelSelector):
         best_logL = float("-inf")
         best_n = -1
 
-        for n_states in range(self.min_n_components, self.max_n_components):
+        for n_states in range(self.min_n_components, self.max_n_components+1):
             avg_logL = 0.0
             try:
                 model = GaussianHMM(n_components=n_states, covariance_type="diag", n_iter=1000,
@@ -145,11 +169,10 @@ class SelectorCV(ModelSelector):
                     model.fit(k_train[0], k_train[1])
                     logL = model.score(k_test[0], k_test[1])
                     avg_logL += logL
+                avg_logL /= 2.0
+                if avg_logL > best_logL:
+                    best_logL = avg_logL
+                    best_n = n_states
             except:
                 break
-            avg_logL /= 2.0
-
-            if avg_logL > best_logL:
-                best_logL = avg_logL
-                best_n = n_states
         return self.base_model(best_n)
