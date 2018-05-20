@@ -85,7 +85,9 @@ class SelectorBIC(ModelSelector):
             try:
                 model = self.base_model(n_states)
                 logL = model.score(self.X, self.lengths)
-                BIC = -2 * logL + n_states * np.log(len(self.lengths))
+                n = sum(self.lengths)
+                p = (n_states ** 2) + 2 * n_states * n + 1
+                BIC = -2 * logL + p * np.log(n)
             except:
                 break
             if BIC > best_BIC:
