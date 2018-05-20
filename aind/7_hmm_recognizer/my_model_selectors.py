@@ -100,10 +100,43 @@ class SelectorDIC(ModelSelector):
 class SelectorCV(ModelSelector):
     ''' select best model based on average log Likelihood of cross-validation folds
 
-    '''
+    ''' 
 
     def select(self):
         warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # TODO implement model selection using CV
-        raise NotImplementedError
+        
+        word_sequences = self.sequences
+        split_method = KFold(2)
+
+        k_folds = []
+        for cv_train_idx, cv_test_idx in split_method.split(word_sequences):
+            X_train, lenghts_train = combine_sequences(cv_train_idx, word_sequences)
+            X_test, lenghts_test = combine_sequences(cv_test_idx, word_sequences)
+            train = (X_train, lenghts_train)
+            test = (X_test, lenghts_test)
+            k_folds.append((train, test))
+
+        best_logL = float("-inf")
+        best_n = -1
+
+        for n_states in range(self.min_n_components, self.max_n_components):
+            avg_logL = 0.0
+            try:
+                model = GaussianHMM(n_components=n_states, covariance_type="diag", n_iter=1000,
+                                        random_state=self.random_state, verbose=False)
+                for k_train, k_test in k_folds:
+                    model.fit(k_train[0], k_train[1])
+                    logL = model.score(k_test[0], k_test[1])
+                    avg_logL += logL
+            except:
+                break
+                #avg_logL = float("-inf")                
+            avg_logL /= 2.0
+
+            if avg_logL > best_logL:
+                best_logL = avg_logL
+                best_n = n_states
+        print(best_n)
+        return self.base_model(best_n)
