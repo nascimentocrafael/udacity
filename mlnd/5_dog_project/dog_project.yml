@@ -1,4 +1,4 @@
-name: dog_project
+name: dog-project
 channels:
   - defaults
 dependencies:
@@ -72,5 +72,5 @@ dependencies:
     - webencodings==0.5.1
     - werkzeug==0.14.1
     - widgetsnbextension==2.0.0
-prefix: /home/rafael/anaconda3/envs/dog_project
+prefix: /home/rafael/anaconda3/envs/dog-project
 
