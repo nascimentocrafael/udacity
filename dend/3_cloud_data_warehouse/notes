@@ -1,0 +1,8 @@
+1 - About creating PRIMARY KEY and FOREIGN KEY:
+    - They are just 'informative' in redshift. The only use is to optmie queries. More info here: https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-defining-constraints.html
+
+2 - About the use of json 'auto' in the staging_events_copy. If I don't use JSONPATHs I will insert NULL values for all columns that have camelCase names. More info here: https://stackoverflow.com/questions/31128095/loading-json-data-to-aws-redshift-results-in-null-values
+
+3- Because of number 2 it is not necessary to use user_id IS NOT NULL in the WHERE clauses for the INSERT statements.
+
+
