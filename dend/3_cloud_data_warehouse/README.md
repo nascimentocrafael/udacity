@@ -11,38 +11,38 @@ In order to better organize the project tables, it was created three schemas, th
 # Staging Tables
 
 - staging_events - log files data.
- - event_id
- - artist
- - auth
- - first_name
- - gender
- - item_session
- - last_name
- - length
- - level
- - location
- - method
- - page
- - registration
- - session_id
- - song 
- - status
- - ts
- - user_agent
- - user_id
+   - event_id
+   - artist
+   - auth
+   - first_name
+   - gender
+   - item_session
+   - last_name
+   - length
+   - level
+   - location
+   - method
+   - page
+   - registration
+   - session_id
+   - song 
+   - status
+   - ts
+   - user_agent
+   - user_id
 
 
 - staging_songs - songs' metadata files data.
- - num_songs
- - artist_id
- - artist_latitude
- - artist_longitude
- - artist_location
- - artist_name
- - song_id
- - title
- - duration
- - year
+   - num_songs
+   - artist_id
+   - artist_latitude
+   - artist_longitude
+   - artist_location
+   - artist_name
+   - song_id
+   - title
+   - duration
+   - year
 
 # Dimensional Model
 
@@ -53,49 +53,49 @@ The dimension tables helps to reduce duplication for songs and artists tables, f
 ## Fact Table
 
 - songplays - records in log data associated with song plays i.e. records with page NextSong
- - songplay_id
- - start_time
- - user_id
- - level
- - song_id
- - artist_id
- - session_id
- - location
- - user_agent
+   - songplay_id
+   - start_time
+   - user_id
+   - level
+   - song_id
+   - artist_id
+   - session_id
+   - location
+   - user_agent
 
 ## Dimension Tables
 
 - users - users in the app
- - user_id
- - first_name
- - last_name
- - gender
- - level
+   - user_id
+   - first_name
+   - last_name
+   - gender
+   - level
  
  
 - songs - songs in music database
- - song_id
- - title
- - artist_id
- - year
- - duration
+   - song_id
+   - title
+   - artist_id
+   - year
+   - duration
  
  
 - artists - artists in music database
- - artist_id
- - name
- - location
- - lattitude
- - longitude
+   - artist_id
+   - name
+   - location
+   - lattitude
+   - longitude
     
     
 - time - timestamps of records in songplays broken down into specific units
- - start_time
- - hour, day
- - week
- - month
- - year
- - weekday
+   - start_time
+   - hour, day
+   - week
+   - month
+   - year
+   - weekday
 
 
 # Files
