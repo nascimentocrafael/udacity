@@ -12,7 +12,7 @@ In order to run this project, you need to have the following:
 
 - python version 3.7.3
 - jupyter version 4.4.0
-- openjdk version "1.8.0_191"
+- openjdk version 1.8.0_191
 - pyspark version 2.4.0 Using Scala version 2.11.12
 - org.apache.hadoop:hadoop-aws:2.7.5
 
