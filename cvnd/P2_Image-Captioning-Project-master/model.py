@@ -27,6 +27,7 @@ class DecoderRNN(nn.Module):
         super(DecoderRNN, self).__init__()
         
         self.hidden_dim = hidden_size
+        self.num_layers = num_layers
 
         # embedding layer that turns words into a vector of a specified size
         self.word_embeddings = nn.Embedding(vocab_size, embed_size)
@@ -42,9 +43,9 @@ class DecoderRNN(nn.Module):
   
 
     def forward(self, features, captions):
-        #pass
         ''' Define the feedforward behavior of the model.'''
         # create embedded word vectors for each word in a sentence
+        # remove end-word to avoid the network to predict it when seeing end-word
         embeds = self.word_embeddings(captions[:, :-1])
 
         # append caption embeds to the end of feature vector
@@ -65,5 +66,28 @@ class DecoderRNN(nn.Module):
 
     def sample(self, inputs, states=None, max_len=20):
         " accepts pre-processed image tensor (inputs) and returns predicted sentence (list of tensor ids of length max_len) "
-        pass
+        captions = []
 
+        # initialize hidden state if not provided        
+        hidden = states
+        if not states:
+            # The axes dimensions are (n_layers, batch_size, hidden_dim)
+            hidden = (torch.randn(self.num_layers, 1, self.hidden_dim).to(inputs.device),
+                      torch.randn(self.num_layers, 1, self.hidden_dim).to(inputs.device))
+
+        for i in range(max_len):
+            # first input to lstm is the image features
+            lstm_out, hidden = self.lstm(inputs, hidden)
+            # outputs shape (1, 1, vocab_size)
+            outputs = self.hidden2vocab(lstm_out.squeeze(1))
+                                    
+            word_id = outputs.argmax(dim=1)
+            # get the most probable word
+            captions.append(word_id.item())
+            
+            # the next inputs are the words in the caption
+            # so embedde the words
+            inputs = self.word_embeddings(word_id).unsqueeze(1)
+        return captions
+            
+            
