@@ -59,7 +59,6 @@ class DecoderRNN(nn.Module):
 
         # get the scores for the most likely words
         word_outputs = self.hidden2vocab(lstm_out)
-        #word_scores = F.log_softmax(word_outputs, dim=1)
         
         return word_outputs
         
