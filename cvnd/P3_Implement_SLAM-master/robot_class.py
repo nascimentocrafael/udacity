@@ -36,7 +36,7 @@ class robot:
         self.num_landmarks = 0
     
     
-    # returns a positive, random float
+    # returns a [-1, 1], random float
     def rand(self):
         return random.random() * 2.0 - 1.0
     
@@ -91,6 +91,12 @@ class robot:
         ##    as list.append([index, dx, dy]), this format is important for data creation done later
         
         ## TODO: return the final, complete list of measurements
+        for l in range(self.num_landmarks):
+            dx = abs(self.x - self.landmarks[l][0]) + self.rand() * self.measurement_noise
+            dy = abs(self.y - self.landmarks[l][1]) + self.rand() * self.measurement_noise
+            
+            if self.measurement_range == -1 or (dx <= self.measurement_range and dy <= self.measurement_range):
+                measurements.append([l, dx, dy])
         return measurements
 
 
